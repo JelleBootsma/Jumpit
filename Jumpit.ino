@@ -66,6 +66,7 @@ class Vib {
 
 class Sensor {
   private:
+    // Create software serial communication object
     SoftwareSerial mySerial(SENS_RX_PIN, SENS_TX_PIN); // RX, TX
   public:
     Sensor() {
@@ -73,14 +74,18 @@ class Sensor {
     }
     // Will be changed when I can test the UART things with the sensor
     void init(){
+      // Open serial connection to sensor
       mySerial.begin(9600);
     }
 
     // Return current distance in centimeters to object
     int getDistance() {
+        // Clear the serial queue, such that the newest reading is returned
         while (mySerial.available())
           mySerial.read()
+        // Wait for the sensor to have a new value
         delay(200);
+        // Divide by ten to convert to cm
         return mySerial.parseInt() / 10;
     }
 };
