@@ -1,6 +1,10 @@
-#define VIB_1_PIN 5
+  #define VIB_1_PIN 5
 #define VIB_2_PIN 6
-#define SENS_1_PIN 8
+#define SENS_TX_PIN 3
+#define SENS_RX_PIN 2
+
+#include <SoftwareSerial.h>
+
 // Create a class for the vibration motors
 class Vib {
   // pin attribute is not publicly accessible
@@ -62,30 +66,40 @@ class Vib {
 
 class Sensor {
   private:
-    byte pin;
+    SoftwareSerial mySerial(SENS_RX_PIN, SENS_TX_PIN); // RX, TX
   public:
-    Sensor(byte pin) {
-      // Store pin passed to the object during construction to the private attribute
-      this->pin = pin;
-      init();
+    Sensor() {
+       init();
     }
     // Will be changed when I can test the UART things with the sensor
     void init(){
-      pinMode(pin, INPUT);
+      mySerial.begin(9600);
     }
 
     // Return current distance in centimeters to object
     int getDistance() {
-      // I haven't been able to program with the sensor yet, so this is just placeholder
-      return 0;
+        while (mySerial.available())
+          mySerial.read()
+        delay(200);
+        return mySerial.parseInt() / 10;
     }
 };
 Vib Vib1(VIB_1_PIN);
 Vib Vib2(VIB_2_PIN);
-Sensor Sensor1(SENS_1_PIN);
+Sensor Sensor1();
+
+
 
 void setup() {
   // put your setup code here, to run once:
+   // Open serial communications and wait for port to open:
+  Serial.begin(9600);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for Native USB only
+  }
+
+
+  Serial.println("Goodnight moon!");
 
 }
 
